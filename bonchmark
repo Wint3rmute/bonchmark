@@ -1,0 +1,46 @@
+#!/usr/bin/bash
+
+[ -z $1 ] && echo "Gib measurements folder" && exit 1
+
+MEASUREMENTS_FOLDER=$1
+
+IDLE_BEGIN=120
+STRESS_TIME=1200s
+IDLE_END=300
+
+stress_test () {
+	stress --cpu 4 --timeout $STRESS_TIME
+}
+
+echo 123 > .do_sensors
+
+sensors_measurement() {
+
+	while [ -f .do_sensors ]
+	do
+		sensors -j \
+			>> "$MEASUREMENTS_FOLDER/$(date +%H_%M_%S_%N).json" \
+			2> /dev/null
+	 		
+		sleep 1
+	
+	done
+}
+
+sensors_measurement &
+
+date
+echo Running idle...
+sleep $IDLE_BEGIN
+
+date
+echo Running stresstest
+stress_test
+
+date
+echo Running idle again...
+sleep $IDLE_END
+
+date 
+echo Finishing
+rm .do_sensors
