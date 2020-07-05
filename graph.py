@@ -12,18 +12,6 @@ from matplotlib import pyplot as plt
 PLOT_COLORS_COUNT = 10
 GRAPH_TITLE = "Bonchmark"
 
-def generate_values_by_key(json_input: dict, lookup_key: str):
-    if isinstance(json_input, dict):
-        for k, v in json_input.items():
-            if k == lookup_key:
-                yield v
-            else:
-                yield from generate_values_by_key(v, lookup_key)
-    elif isinstance(json_input, list):
-        for item in json_input:
-            yield from generate_values_by_key(item, lookup_key)
-
-
 def recursive_get(obj_input, *keys):
     return reduce(lambda acc, key: acc.get(key, {}), keys, obj_input)
 
